@@ -20,7 +20,7 @@ class HomePage(BasePage):
         return self.web_driver.get_title_page()
 
     def get_current_url(self):
-        return self.web_driver.get_current_url()
+        return self.web_driver.get_current_url
 
     def is_open(self):
         return validate_wait_results(

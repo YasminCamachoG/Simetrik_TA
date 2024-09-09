@@ -1,3 +1,5 @@
+from asyncio.log import logger
+from selenium.webdriver.common.by import By
 from typing import List
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
@@ -47,16 +49,18 @@ class BasePage(object):
         try:
             return self.web_driver.find_element(selector[0], selector[1])
         except NoSuchElementException as e:
+            logger.error(f"Element not found: {selector}")
             raise e
 
-    def find_elements(self, selector) -> List[WebElement]:
+    def find_elements(self, by:By ,value:str) -> List[WebElement]:
         """
         find int the page one list of elements rendered in the DOM
         """
         try:
-            return self.web_driver.find_elements(selector[0], selector[1])
+            return self.web_driver.find_elements(by, value)
         except NoSuchElementException as e:
-            raise e
+            logger.error(f"Elements not found: {by} {value}")
+        raise e
 
     def switch_to(self, window_name):
         """
@@ -94,11 +98,38 @@ class BasePage(object):
 
     def are_element_presents(self, list_element, context):
         validation_list = []
+        # Asumiendo que context.table es un objeto behave.Table
         elements = transformation_to_element_name(list_element)
+        
         for element in elements:
-            selector = self.context.current_page.webElements.__dict__.get(element)
-            if selector is None:
-                raise TypeError(f' The {element} selector name is not created')
-            web_element = context.browser.find_elements(selector)
-            validation_list.append(len(web_element) > 0)
+            if isinstance(element, tuple) and len(element) == 2:
+                by_type, selector = element
+            else:
+                raise ValueError(f'Invalid element format: {element}')
+            
+            if by_type not in [By.CSS_SELECTOR, By.XPATH]:
+                raise ValueError(f"Unsupported selector type: {by_type}")
+
+            try:
+                # Buscar elementos en la página
+                web_elements = context.browser.find_elements(by_type, selector)
+                is_present = len(web_elements) > 0
+                validation_list.append(is_present)
+            
+            except Exception as e:
+                print(f'Error while finding element with selector {selector}: {str(e)}')
+                validation_list.append(False)
+
         return validation_list
+    
+    def find_and_click_menu_option(self, menu_text):
+    
+        """
+        Encuentra un elemento del menú por su texto y hace clic en él.
+        """
+        menu_items = self.find_elements((By.CSS_SELECTOR, ".HtHs-nav-list a"))
+        for item in menu_items:
+            if item.text.strip() == menu_text:
+                item.click()
+                return
+        raise ValueError(f"Menu item with text '{menu_text}' not found.")

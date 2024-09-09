@@ -2,6 +2,13 @@ from selenium.webdriver.common.by import By
 
 
 class HomeWebElements:
-    where_label = (By.CSS_SELECTOR, '.primary-content h2')
-    signin_button = (By.CSS_SELECTOR, '.menu__wrapper .menu-label__wrapper button')
-    search_button = (By.CSS_SELECTOR, '.pageContent .SearchPage__FrontDoor .HPw7-form-fields-and-submit .HPw7-submit button')
+    name_tag_input = (By.CSS_SELECTOR, 'div.udzg[role="combobox"][aria-label="Cabina Económica"]') 
+    name_dropdown_column_input = (By.CSS_SELECTOR, 'div.prSa')  
+    search_tag_input = (By.CSS_SELECTOR, 'div.udzg[role="combobox"][aria-label="Tipo de viaje Ida y vuelta"]')  
+    cancel_button = (By.CSS_SELECTOR, 'div.c_neb-item-close > div[role="button"]')  
+    create_column_disabled_button = (By.CSS_SELECTOR, 'div[role="button"]')  
+
+    # Elementos adicionales para verificar que la página está abierta
+    where_label = (By.CSS_SELECTOR, 'div.mc6t-logo')
+    signin_button = (By.XPATH, '//div[span[text()="Iniciar sesión"]]')
+    search_button = (By.CSS_SELECTOR, 'button.RxNS[aria-label="Buscar"]')

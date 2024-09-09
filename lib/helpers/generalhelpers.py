@@ -1,4 +1,8 @@
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.by import By
+
+from lib.pages.webelements.homewebelements import HomeWebElements
+
 
 
 def validate_text(comparison_type, text_a, text_b):
@@ -9,14 +13,26 @@ def validate_text(comparison_type, text_a, text_b):
 
 
 def transformation_helper(name, element_type):
-    return '{}{}{}'.format(name.lower(), "_", element_type.lower())
+    # Genera el nombre del atributo esperado en HomeWebElements
+    formatted_name = '{}_{}'.format(name.lower(), element_type.lower())
+    
+    # Devuelve el nombre generado
+    return formatted_name
 
 
 def transformation_to_element_name(table_elements):
     element_final_list = []
     for element in table_elements:
+        # Usa transformation_helper para obtener el nombre del atributo
         element_name = transformation_helper(element['name'], element['type'])
-        element_final_list.append(element_name)
+        
+        # Obtiene el selector de HomeWebElements usando el nombre generado
+        if hasattr(HomeWebElements, element_name):
+            selector = getattr(HomeWebElements, element_name)
+            element_final_list.append(selector)
+        else:
+            raise ValueError(f"Selector for element '{element_name}' not found in HomeWebElements.")
+    
     return element_final_list
 
 
